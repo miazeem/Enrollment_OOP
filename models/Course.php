@@ -5,25 +5,13 @@
  * Supports multiple teachers or no teachers per course
  */
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/BaseModel.php';
 
-class Course {
-    private $db;
-    private $table = 'courses';
+class Course extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
-    }
-
-    /**
-     * Get all courses
-     * @return array
-     */
-    public function getAll() {
-        $query = "SELECT * FROM {$this->table} ORDER BY id DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll();
+        parent::__construct();
+        $this->table = 'courses';
     }
 
     /**
@@ -38,19 +26,6 @@ class Course {
     }
 
     /**
-     * Get course by ID
-     * @param int $id
-     * @return array|false
-     */
-    public function getById($id) {
-        $query = "SELECT * FROM {$this->table} WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
      * Create new course
      * @param array $data
      * @return int|false - Returns course_id on success
@@ -62,13 +37,13 @@ class Course {
         
         $stmt = $this->db->prepare($query);
         
-        $stmt->bindParam(':course_code', $data['course_code']);
-        $stmt->bindParam(':course_name', $data['course_name']);
-        $stmt->bindParam(':description', $data['description']);
-        $stmt->bindParam(':credits', $data['credits'], PDO::PARAM_INT);
-        $stmt->bindParam(':semester', $data['semester']);
-        $stmt->bindParam(':academic_year', $data['academic_year']);
-        $stmt->bindParam(':status', $data['status']);
+        $stmt->bindValue(':course_code', $data['course_code']);
+        $stmt->bindValue(':course_name', $data['course_name']);
+        $stmt->bindValue(':description', $data['description']);
+        $stmt->bindValue(':credits', $data['credits'], PDO::PARAM_INT);
+        $stmt->bindValue(':semester', $data['semester']);
+        $stmt->bindValue(':academic_year', $data['academic_year']);
+        $stmt->bindValue(':status', $data['status']);
         
         if ($stmt->execute()) {
             return $this->db->lastInsertId();
@@ -95,27 +70,15 @@ class Course {
         
         $stmt = $this->db->prepare($query);
         
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':course_code', $data['course_code']);
-        $stmt->bindParam(':course_name', $data['course_name']);
-        $stmt->bindParam(':description', $data['description']);
-        $stmt->bindParam(':credits', $data['credits'], PDO::PARAM_INT);
-        $stmt->bindParam(':semester', $data['semester']);
-        $stmt->bindParam(':academic_year', $data['academic_year']);
-        $stmt->bindParam(':status', $data['status']);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':course_code', $data['course_code']);
+        $stmt->bindValue(':course_name', $data['course_name']);
+        $stmt->bindValue(':description', $data['description']);
+        $stmt->bindValue(':credits', $data['credits'], PDO::PARAM_INT);
+        $stmt->bindValue(':semester', $data['semester']);
+        $stmt->bindValue(':academic_year', $data['academic_year']);
+        $stmt->bindValue(':status', $data['status']);
         
-        return $stmt->execute();
-    }
-
-    /**
-     * Delete course
-     * @param int $id
-     * @return bool
-     */
-    public function delete($id) {
-        $query = "DELETE FROM {$this->table} WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
@@ -130,7 +93,7 @@ class Course {
             // First, remove existing teachers
             $deleteQuery = "DELETE FROM course_teachers WHERE course_id = :course_id";
             $stmt = $this->db->prepare($deleteQuery);
-            $stmt->bindParam(':course_id', $courseId, PDO::PARAM_INT);
+            $stmt->bindValue(':course_id', $courseId, PDO::PARAM_INT);
             $stmt->execute();
 
             // Then, add new teachers if any
@@ -139,8 +102,8 @@ class Course {
                 $stmt = $this->db->prepare($insertQuery);
                 
                 foreach ($teacherIds as $teacherId) {
-                    $stmt->bindParam(':course_id', $courseId, PDO::PARAM_INT);
-                    $stmt->bindParam(':teacher_id', $teacherId, PDO::PARAM_INT);
+                    $stmt->bindValue(':course_id', $courseId, PDO::PARAM_INT);
+                    $stmt->bindValue(':teacher_id', $teacherId, PDO::PARAM_INT);
                     $stmt->execute();
                 }
             }
@@ -164,7 +127,7 @@ class Course {
                   ORDER BY t.first_name, t.last_name";
         
         $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':course_id', $courseId, PDO::PARAM_INT);
+        $stmt->bindValue(':course_id', $courseId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -177,7 +140,7 @@ class Course {
     public function getTeacherIds($courseId) {
         $query = "SELECT teacher_id FROM course_teachers WHERE course_id = :course_id";
         $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':course_id', $courseId, PDO::PARAM_INT);
+        $stmt->bindValue(':course_id', $courseId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
@@ -195,7 +158,7 @@ class Course {
                   ORDER BY s.last_name, s.first_name";
         
         $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':course_id', $courseId, PDO::PARAM_INT);
+        $stmt->bindValue(':course_id', $courseId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }

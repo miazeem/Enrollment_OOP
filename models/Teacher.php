@@ -4,25 +4,13 @@
  * Handles all teacher-related database operations
  */
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/BaseModel.php';
 
-class Teacher {
-    private $db;
-    private $table = 'teachers';
+class Teacher extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
-    }
-
-    /**
-     * Get all teachers
-     * @return array
-     */
-    public function getAll() {
-        $query = "SELECT * FROM {$this->table} ORDER BY id DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll();
+        parent::__construct();
+        $this->table = 'teachers';
     }
 
     /**
@@ -37,19 +25,6 @@ class Teacher {
     }
 
     /**
-     * Get teacher by ID
-     * @param int $id
-     * @return array|false
-     */
-    public function getById($id) {
-        $query = "SELECT * FROM {$this->table} WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
      * Create new teacher
      * @param array $data
      * @return bool
@@ -61,13 +36,13 @@ class Teacher {
         
         $stmt = $this->db->prepare($query);
         
-        $stmt->bindParam(':first_name', $data['first_name']);
-        $stmt->bindParam(':last_name', $data['last_name']);
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':phone', $data['phone']);
-        $stmt->bindParam(':specialization', $data['specialization']);
-        $stmt->bindParam(':hire_date', $data['hire_date']);
-        $stmt->bindParam(':status', $data['status']);
+        $stmt->bindValue(':first_name', $data['first_name']);
+        $stmt->bindValue(':last_name', $data['last_name']);
+        $stmt->bindValue(':email', $data['email']);
+        $stmt->bindValue(':phone', $data['phone']);
+        $stmt->bindValue(':specialization', $data['specialization']);
+        $stmt->bindValue(':hire_date', $data['hire_date']);
+        $stmt->bindValue(':status', $data['status']);
         
         return $stmt->execute();
     }
@@ -91,27 +66,15 @@ class Teacher {
         
         $stmt = $this->db->prepare($query);
         
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':first_name', $data['first_name']);
-        $stmt->bindParam(':last_name', $data['last_name']);
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':phone', $data['phone']);
-        $stmt->bindParam(':specialization', $data['specialization']);
-        $stmt->bindParam(':hire_date', $data['hire_date']);
-        $stmt->bindParam(':status', $data['status']);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':first_name', $data['first_name']);
+        $stmt->bindValue(':last_name', $data['last_name']);
+        $stmt->bindValue(':email', $data['email']);
+        $stmt->bindValue(':phone', $data['phone']);
+        $stmt->bindValue(':specialization', $data['specialization']);
+        $stmt->bindValue(':hire_date', $data['hire_date']);
+        $stmt->bindValue(':status', $data['status']);
         
-        return $stmt->execute();
-    }
-
-    /**
-     * Delete teacher
-     * @param int $id
-     * @return bool
-     */
-    public function delete($id) {
-        $query = "DELETE FROM {$this->table} WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
@@ -128,7 +91,7 @@ class Teacher {
                   ORDER BY c.course_code";
         
         $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':teacher_id', $teacherId, PDO::PARAM_INT);
+        $stmt->bindValue(':teacher_id', $teacherId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }

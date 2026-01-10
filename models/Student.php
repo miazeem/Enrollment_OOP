@@ -4,38 +4,13 @@
  * Handles all student-related database operations
  */
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/BaseModel.php';
 
-class Student {
-    private $db;
-    private $table = 'students';
+class Student extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
-    }
-
-    /**
-     * Get all students
-     * @return array
-     */
-    public function getAll() {
-        $query = "SELECT * FROM {$this->table} ORDER BY id DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
-
-    /**
-     * Get student by ID
-     * @param int $id
-     * @return array|false
-     */
-    public function getById($id) {
-        $query = "SELECT * FROM {$this->table} WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
+        parent::__construct();
+        $this->table = 'students';
     }
 
     /**
@@ -50,12 +25,12 @@ class Student {
         
         $stmt = $this->db->prepare($query);
         
-        $stmt->bindParam(':first_name', $data['first_name']);
-        $stmt->bindParam(':last_name', $data['last_name']);
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':phone', $data['phone']);
-        $stmt->bindParam(':date_of_birth', $data['date_of_birth']);
-        $stmt->bindParam(':status', $data['status']);
+        $stmt->bindValue(':first_name', $data['first_name']);
+        $stmt->bindValue(':last_name', $data['last_name']);
+        $stmt->bindValue(':email', $data['email']);
+        $stmt->bindValue(':phone', $data['phone']);
+        $stmt->bindValue(':date_of_birth', $data['date_of_birth']);
+        $stmt->bindValue(':status', $data['status']);
         
         return $stmt->execute();
     }
@@ -78,26 +53,14 @@ class Student {
         
         $stmt = $this->db->prepare($query);
         
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':first_name', $data['first_name']);
-        $stmt->bindParam(':last_name', $data['last_name']);
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':phone', $data['phone']);
-        $stmt->bindParam(':date_of_birth', $data['date_of_birth']);
-        $stmt->bindParam(':status', $data['status']);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':first_name', $data['first_name']);
+        $stmt->bindValue(':last_name', $data['last_name']);
+        $stmt->bindValue(':email', $data['email']);
+        $stmt->bindValue(':phone', $data['phone']);
+        $stmt->bindValue(':date_of_birth', $data['date_of_birth']);
+        $stmt->bindValue(':status', $data['status']);
         
-        return $stmt->execute();
-    }
-
-    /**
-     * Delete student
-     * @param int $id
-     * @return bool
-     */
-    public function delete($id) {
-        $query = "DELETE FROM {$this->table} WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
@@ -114,7 +77,7 @@ class Student {
                   ORDER BY e.enrollment_date DESC";
         
         $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':student_id', $studentId, PDO::PARAM_INT);
+        $stmt->bindValue(':student_id', $studentId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }

@@ -4,18 +4,17 @@
  * Handles all enrollment-related database operations
  */
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/BaseModel.php';
 
-class Enrollment {
-    private $db;
-    private $table = 'enrollments';
+class Enrollment extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        parent::__construct();
+        $this->table = 'enrollments';
     }
 
     /**
-     * Get all enrollments
+     * Get all enrollments (Override to include joins)
      * @return array
      */
     public function getAll() {
@@ -33,7 +32,7 @@ class Enrollment {
     }
 
     /**
-     * Get enrollment by ID
+     * Get enrollment by ID (Override to include joins)
      * @param int $id
      * @return array|false
      */
@@ -69,10 +68,10 @@ class Enrollment {
         
         $stmt = $this->db->prepare($query);
         
-        $stmt->bindParam(':student_id', $data['student_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':course_id', $data['course_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':grade', $data['grade']);
-        $stmt->bindParam(':status', $data['status']);
+        $stmt->bindValue(':student_id', $data['student_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':course_id', $data['course_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':grade', $data['grade']);
+        $stmt->bindValue(':status', $data['status']);
         
         return $stmt->execute();
     }
@@ -91,22 +90,10 @@ class Enrollment {
         
         $stmt = $this->db->prepare($query);
         
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':grade', $data['grade']);
-        $stmt->bindParam(':status', $data['status']);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':grade', $data['grade']);
+        $stmt->bindValue(':status', $data['status']);
         
-        return $stmt->execute();
-    }
-
-    /**
-     * Delete enrollment
-     * @param int $id
-     * @return bool
-     */
-    public function delete($id) {
-        $query = "DELETE FROM {$this->table} WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
@@ -121,8 +108,8 @@ class Enrollment {
                   WHERE student_id = :student_id AND course_id = :course_id";
         
         $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':student_id', $studentId, PDO::PARAM_INT);
-        $stmt->bindParam(':course_id', $courseId, PDO::PARAM_INT);
+        $stmt->bindValue(':student_id', $studentId, PDO::PARAM_INT);
+        $stmt->bindValue(':course_id', $courseId, PDO::PARAM_INT);
         $stmt->execute();
         
         return $stmt->fetchColumn() > 0;
